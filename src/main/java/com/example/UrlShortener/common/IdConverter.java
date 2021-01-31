@@ -20,17 +20,15 @@ public class IdConverter {
 
     private void initializeIndexToChar() {
         indexToCharTable = new ArrayList<>();
-        char c = 'a';
+        char c;
         for(int i=0;i<26;i++) {
             c = (char)(97+i);
             indexToCharTable.add(c);
         }
-        c = 'A';
         for(int i=0;i<26;i++) {
             c = (char)(65+i);
             indexToCharTable.add(c);
         }
-        c = '0';
         for(int i=0;i<10;i++) {
             c = (char)(48+i);
             indexToCharTable.add(c);
@@ -68,6 +66,10 @@ public class IdConverter {
 
     private static List<Integer> convertBase10to62Id(long id) {
         LinkedList<Integer> digits = new LinkedList<>();
+        if(id == 0) {
+            digits.addFirst(0);
+            return digits;
+        }
         while(id > 0) {
             int rem = (int)(id % 62);
             digits.addFirst(rem);

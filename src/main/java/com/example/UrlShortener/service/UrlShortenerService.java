@@ -25,11 +25,17 @@ public class UrlShortenerService {
     Long reqId = -1L;
 
     public String shortenUrl(String localUrl, String longUrl) {
-        reqId++;
-        String uniqueId = INSTANCE.createUniqueId(reqId);
-        repo.save(new ShortUrl(reqId, longUrl));
-        String baseString = formatLocalUrl(localUrl);
-        return baseString + uniqueId;
+        if(repo.findByLongUrl(longUrl) == null) {
+            reqId++;
+            String uniqueId = INSTANCE.createUniqueId(reqId);
+            String baseString = formatLocalUrl(localUrl);
+            String shortUrl = baseString + uniqueId;
+            ShortUrl url = new  ShortUrl(reqId, longUrl, shortUrl);
+            repo.save(url);
+            return shortUrl;
+        }
+        else
+            return "Error";
     }
 
     private String formatLocalUrl(String localUrl) {
@@ -39,7 +45,6 @@ public class UrlShortenerService {
 
     public String getLongUrl(String id) throws Exception {
         Long key = INSTANCE.getKeyFromUniqueId(id);
-        System.out.println(key);
         Optional<ShortUrl> longUrl = repo.findById(key);
         String url = "";
         if(longUrl.isPresent()) {

@@ -35,6 +35,8 @@ public class UrlController {
         if(validator.isValidUrl(longUrl)) {
             String localUrl = request.getRequestURL().toString();
             String shortUrl = urlShortner.shortenUrl(localUrl, longUrl);
+            if(shortUrl.equals("Error"))
+                return new ResponseEntity<String>("Url already exists", HttpStatus.BAD_REQUEST);
             return new ResponseEntity<String>(shortUrl, HttpStatus.CREATED);
         }
         return new ResponseEntity<String>("Please enter valid URL", HttpStatus.BAD_REQUEST);
@@ -55,16 +57,20 @@ public class UrlController {
     }
 
     @GetMapping("/error")
-    public String error() {
-        return "Could not fetch url with that id";
+    public ResponseEntity<String> error() {
+        return new ResponseEntity<String>("Could not fetch url with that id",HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/history")
-    public List<ShortUrl> getHistory() {
-        return urlShortner.getHistory();
+    public ResponseEntity<Object> getHistory() {
+        List<ShortUrl> list = urlShortner.getHistory();
+        if (list == null || list.isEmpty()) {
+            return new ResponseEntity<>("No requests stored in the database", HttpStatus.OK);
+        }
+        return new ResponseEntity<>(list,HttpStatus.OK);
     }
 
-    private static class ShortenRequest {
+    public static class ShortenRequest {
 
         private String url;
 
