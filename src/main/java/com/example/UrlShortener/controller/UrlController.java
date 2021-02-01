@@ -11,6 +11,8 @@ import com.example.UrlShortener.service.UrlShortenerService;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,8 @@ public class UrlController {
     private UrlShortenerService urlShortner;
 
     URLValidator validator = new URLValidator();
+
+    private static final Logger logger = LoggerFactory.getLogger(UrlController.class);
     
     @PostMapping(value = "/shorten",consumes = "application/json") 
     public ResponseEntity<String> shortenUrl(@RequestBody ShortenRequest shortenRequest, HttpServletRequest request) {
@@ -35,10 +39,12 @@ public class UrlController {
         if(validator.isValidUrl(longUrl)) {
             String localUrl = request.getRequestURL().toString();
             String shortUrl = urlShortner.shortenUrl(localUrl, longUrl);
+            logger.debug("Short url: {} from long url: {}", shortUrl, longUrl);
             if(shortUrl.equals("Error"))
                 return new ResponseEntity<String>("Url already exists", HttpStatus.BAD_REQUEST);
             return new ResponseEntity<String>(shortUrl, HttpStatus.CREATED);
         }
+        logger.error("Url validation failed");
         return new ResponseEntity<String>("Please enter valid URL", HttpStatus.BAD_REQUEST);
     }
 

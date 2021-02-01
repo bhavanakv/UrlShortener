@@ -5,9 +5,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class IdConverter {
 
-    public static final IdConverter INSTANCE = new IdConverter();
+    private static final Logger logger = LoggerFactory.getLogger(IdConverter.class);
 
     public IdConverter() {
 
@@ -33,7 +36,7 @@ public class IdConverter {
             c = (char)(48+i);
             indexToCharTable.add(c);
         }
-        System.out.println(indexToCharTable.toString());
+        logger.info("IndexToCharTable: " + indexToCharTable.toString());
     }
 
     private void initializeCharToIndex() {
@@ -52,7 +55,7 @@ public class IdConverter {
             c = (char)(48+i);
             charToIndexTable.put(c,k);
         }
-        System.out.println(charToIndexTable.toString());
+        logger.info("charToIndexTable: " + charToIndexTable.toString());
     }
     
     public String createUniqueId(long id) {
